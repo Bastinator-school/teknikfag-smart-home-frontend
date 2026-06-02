@@ -37,6 +37,26 @@ function toggleLight(element, opts) {
     // expose a data-state attribute as "1" or "0" for easy inspection
     const stateStr = state ? '1' : '0';
     element.setAttribute('data-state', stateStr);
+
+    // send update to backend (best-effort)
+    try {
+        fetch(`http://${http_host}/set_lamp_state`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Room: room,
+                Lamp: lamp || '',
+                State: stateStr
+            })
+        }).catch(err => {
+            // network errors shouldn't break the UI; log for debugging
+            console.warn('Failed to POST light state:', err);
+        });
+    } catch (err) {
+        console.warn('toggleLight error:', err);
+    }
 }
 
 

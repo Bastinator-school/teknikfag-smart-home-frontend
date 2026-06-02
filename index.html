@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Control</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Home</h1>
+
+        <div class="rooms-grid">
+            <!-- Living Room -->
+            <div class="room">
+                <h2>kitchen</h2>
+                <div class="lights">
+                    <button class="light" room="kitchen" data-light="1">Light 1</button>
+                    <button class="light" room="kitchen" data-light="2">Light 2</button>
+                    <button class="light" room="kitchen" data-light="3">Light 3</button>
+                </div>
+            </div>
+
+            <!-- Bedroom -->
+            <div class="room">
+                <h2>Bedroom</h2>
+                <div class="lights">
+                    <button class="light" room="bedroom" data-light="1">Light 1</button>
+                    <button class="light" room="bedroom" data-light="2">Light 2</button>
+                    <button class="light" room="bedroom" data-light="3">Light 3</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

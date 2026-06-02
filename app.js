@@ -29,33 +29,44 @@ function initializeLights() {
  * @param {{room:string, lamp:string, state:boolean}} opts
  */
 function toggleLight(element, opts) {
-    const { room = '', lamp = '', state = '' } = opts;
+    // opts: { room, lamp, state, send }
+    // `send` controls whether this function POSTs the change to the backend.
+    // When updates originate from the server we call with send: false to avoid
+    // creating a feedback loop.
+    const { room = '', lamp = '', state = '', send = true } = opts;
 
     // apply explicit state instead of blind toggling
+    const stateStr = state ? '1' : '0';
+
+    // If the element already reflects the requested state, do nothing.
+    // This avoids redundant POSTs and UI churn when the backend re-broadcasts state.
+    if (element.getAttribute('data-state') === stateStr) return;
+
     element.classList.toggle('active', state);
     element.setAttribute('aria-pressed', state ? 'true' : 'false');
     // expose a data-state attribute as "1" or "0" for easy inspection
-    const stateStr = state ? '1' : '0';
     element.setAttribute('data-state', stateStr);
 
-    // send update to backend (best-effort)
-    try {
-        fetch(`http://${http_host}/set_lamp_state`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                Room: room,
-                Lamp: lamp || '',
-                State: stateStr
-            })
-        }).catch(err => {
-            // network errors shouldn't break the UI; log for debugging
-            console.warn('Failed to POST light state:', err);
-        });
-    } catch (err) {
-        console.warn('toggleLight error:', err);
+    // send update to backend (best-effort) unless explicitly disabled
+    if (send) {
+        try {
+            fetch(`http://${http_host}/set_lamp_state`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    Room: room,
+                    Lamp: lamp || '',
+                    State: stateStr
+                })
+            }).catch(err => {
+                // network errors shouldn't break the UI; log for debugging
+                console.warn('Failed to POST light state:', err);
+            });
+        } catch (err) {
+            console.warn('toggleLight error:', err);
+        }
     }
 }
 
